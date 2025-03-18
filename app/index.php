@@ -2,11 +2,13 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\Parser;
 
 require __DIR__ . '/vendor/autoload.php';
 
 $app = AppFactory::create();
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 $app->get('/names/{name}', function (Request $request, Response $response, array $args) {
     $name = $args['name'];
@@ -15,20 +17,33 @@ $app->get('/names/{name}', function (Request $request, Response $response, array
 
     class Apple
     {
-        public string $variety;
+        public int $variety;
     }
 
     $apple = new Apple();
-    $apple->variety = 'Honeycrisp';
+    $apple->variety = 123;
 
-    $response->getBody()->write(
-        $expressionLanguage->evaluate(
-            'fruit.variety',
+
+    // $expressionLanguage->parse('1 + 2', [])->getNodes()->toArray()
+    try {
+        (new ExpressionLanguage())->lint(
+            'fruit + 2',
             [
-                'fruit' => $apple,
+                'fruit', // no values needed
             ]
+        );
+    } catch (SyntaxError $exception) {
+        $response->getBody()->write($exception->getMessage());
+    }
+    
+    $response->getBody()->write(json_encode(
+        $expressionLanguage->evaluate(
+        'fruit.variety + 2',
+        [
+            'fruit' => $apple,
+        ]
         )
-    );
+    ));
     return $response;
 });
 
