@@ -6,16 +6,29 @@ use Slim\Factory\AppFactory;
 require __DIR__ . '/vendor/autoload.php';
 
 $app = AppFactory::create();
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 $app->get('/names/{name}', function (Request $request, Response $response, array $args) {
     $name = $args['name'];
 
-    $names = array("Peter", "Paul", "Mary");
-    array_push($names, $name);
+    $expressionLanguage = new ExpressionLanguage();
 
-    sort($names);
+    class Apple
+    {
+        public string $variety;
+    }
 
-    $response->getBody()->write("Hello, " . json_encode($names));
+    $apple = new Apple();
+    $apple->variety = 'Honeycrisp';
+
+    $response->getBody()->write(
+        $expressionLanguage->evaluate(
+            'fruit.variety',
+            [
+                'fruit' => $apple,
+            ]
+        )
+    );
     return $response;
 });
 
