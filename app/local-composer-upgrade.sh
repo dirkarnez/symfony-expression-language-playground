@@ -11,7 +11,10 @@ export PATH="$PATH:$LARAGON_DIR/bin/php/php-8.4.0-Win32-vs17-x64:$LARAGON_DIR/bi
 
 
 # php composer-setup.php --install-dir=./bin
-composer install -vvv 
+composer install -vvv
+composer upgrade -vvv
+composer update -vvv
+
 
 # @REM %LARAGON_DIR%\bin\php\php-8.4.0-Win32-vs17-x64\php.exe "%LARAGON_DIR%\bin\composer\composer.phar" init -vvv &&^
 # @REM %LARAGON_DIR%\bin\php\php-8.4.0-Win32-vs17-x64\php.exe "%LARAGON_DIR%\bin\composer\composer.phar" config -g repo.packagist composer https://packagist.phpcomposer.com &&^
